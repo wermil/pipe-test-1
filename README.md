@@ -39,3 +39,39 @@ $ bash scripts/greet.sh --hour 24 Оля; echo "код $?"
 Без `--hour` поведінка не змінюється. Якщо година невалідна (`-1`, `24`, `abc`) або значення не вказано, скрипт пише повідомлення в stderr і завершується з кодом 2.
 
 Тести: `bash tests/daypart_test.sh` і `bash tests/greet_test.sh`.
+
+## Слова
+
+Скрипт `scripts/words.sh` рахує слова (послідовності символів між пробілами, табуляціями й переносами рядків) і виводить число. Текст береться з аргументів; якщо тексту в аргументах немає, скрипт читає stdin.
+
+```sh
+$ bash scripts/words.sh один два три
+3
+$ bash scripts/words.sh "один два"
+2
+$ printf 'один два\nтри\n' | bash scripts/words.sh
+3
+$ bash scripts/words.sh </dev/null
+0
+```
+
+Опція `--unique` виводить кількість унікальних слів з урахуванням регістру (`а` і `А` — різні слова). Вона працює і з аргументами, і зі stdin.
+
+```sh
+$ bash scripts/words.sh --unique а б а
+2
+$ bash scripts/words.sh --unique а А
+2
+$ printf 'а б а\n' | bash scripts/words.sh --unique
+2
+```
+
+`--` завершує опції: все після нього — слова (`words.sh -- --unique` → `1`). Невідома опція, наприклад `--foo`, дає повідомлення в stderr і код 2:
+
+```sh
+$ bash scripts/words.sh --foo; echo "код $?"
+Невідома опція: «--foo» (підтримується --unique)
+код 2
+```
+
+Тест: `bash tests/words_test.sh`.
